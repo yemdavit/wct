@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classroom Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="flex justify-center items-center min-h-screen bg-gray-100">
+    <section class="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold text-center text-gray-700">
+        Classroom Management
+      </h2>
+
+      <!-- Show Students -->
+      <div id="studentsList" class="mt-4 p-4 bg-gray-200 rounded-lg">
+        <h3 class="text-xl font-semibold text-gray-700">Students</h3>
+        <ul id="studentContainer" class="mt-2 space-y-2"></ul>
+      </div>
+
+      <!-- Add Student Form -->
+      <form id="addStudentForm" class="mt-4 space-y-2">
+        <h3 class="text-xl font-semibold">Add Student</h3>
+        <input
+          type="text"
+          id="student_id"
+          placeholder="ID"
+          required
+          class="input-field"
+        />
+        <input
+          type="text"
+          id="name"
+          placeholder="Full Name"
+          required
+          class="input-field"
+        />
+        <input
+          type="text"
+          id="department"
+          placeholder="Department"
+          required
+          class="input-field"
+        />
+        <input
+          type="email"
+          id="email"
+          placeholder="Email"
+          required
+          class="input-field"
+        />
+        <button type="submit" class="btn bg-blue-500">Add Student</button>
+      </form>
+
+      <!-- Edit Student Form -->
+      <form id="editStudentForm" class="mt-4 space-y-2">
+        <h3 class="text-xl font-semibold">Edit Student</h3>
+        <input
+          type="text"
+          id="edit_student_id"
+          placeholder="ID"
+          required
+          class="input-field"
+        />
+        <input
+          type="text"
+          id="edit_name"
+          placeholder="Full Name"
+          required
+          class="input-field"
+        />
+        <input
+          type="text"
+          id="edit_department"
+          placeholder="Department"
+          required
+          class="input-field"
+        />
+        <input
+          type="email"
+          id="edit_email"
+          placeholder="Email"
+          required
+          class="input-field"
+        />
+        <button type="submit" class="btn bg-yellow-500">Edit Student</button>
+      </form>
+
+      <!-- Delete Student Form -->
+      <form id="deleteStudentForm" class="mt-4 space-y-2">
+        <h3 class="text-xl font-semibold">Delete Student</h3>
+        <input
+          type="text"
+          id="delete_student_id"
+          placeholder="Student ID"
+          required
+          class="input-field"
+        />
+        <button type="submit" class="btn bg-red-500">Delete Student</button>
+      </form>
+    </section>
+
+    <style>
+      .input-field {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid gray;
+        border-radius: 5px;
+      }
+      .btn {
+        width: 100%;
+        padding: 10px;
+        color: white;
+        border-radius: 5px;
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        function fetchStudents() {
+          fetch("data.php")
+            .then((res) => res.json())
+            .then((students) => {
+              let container = document.getElementById("studentContainer");
+              container.innerHTML = "";
+              students.forEach((student) => {
+                container.innerHTML += `<li>${student.id} - ${student.name} (${student.department}) - ${student.email}</li>`;
+              });
+            })
+            .catch((err) => console.error("Error fetching students:", err));
+        }
+
+        document.getElementById("addStudentForm").onsubmit = function (e) {
+          e.preventDefault();
+          let formData = new FormData();
+          formData.append("action", "add");
+          formData.append("id", document.getElementById("student_id").value);
+          formData.append("name", document.getElementById("name").value);
+          formData.append(
+            "department",
+            document.getElementById("department").value
+          );
+          formData.append("email", document.getElementById("email").value);
+
+          fetch("data.php", { method: "POST", body: formData })
+            .then((res) => res.json())
+            .then((data) => {
+              alert(data.message || data.error);
+              fetchStudents();
+            })
+            .catch((err) => console.error("Error adding student:", err));
+        };
+
+        fetchStudents();
+      });
+    </script>
+  </body>
+</html>
